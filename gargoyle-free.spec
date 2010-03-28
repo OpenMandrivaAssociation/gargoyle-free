@@ -21,7 +21,7 @@ Patch4:		ignore_bundled_libraries.patch
 Patch5:		sdl_sound_debian.patch
 License:        GPLv2 and others
 Group:          Games/Other
-BuildRequires:  ftjam SDL_sound-devel SDL_mixer-devel gtk2-devel
+BuildRequires:  ftjam SDL-devel SDL_sound-devel SDL_mixer-devel gtk2-devel jpeg-devel freetype-devel png-devel fontconfig-devel
 BuildRoot:      %{_tmppath}/%{name}-buildroot
 
 %description
