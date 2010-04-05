@@ -1,7 +1,7 @@
 %define name    gargoyle-free
 %define originalversion 2009-08-25
 %define version 20090825
-%define release %mkrel 1
+%define release %mkrel 2
 
 Name:           %{name}
 Summary:        Graphical player for Interactive Fiction games
@@ -51,12 +51,12 @@ will miss the hyperlinks.
 
 %prep
 %setup -q -n %{name}-%{originalversion}
-%patch0 -p1 
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
+%patch0 -p1 -b .mdv
+%patch1 -p1 -b .mdv
+%patch2 -p1 -b .mdv
+%patch3 -p0 -b .mdv
+%patch4 -p1 -b .mdv
+%patch5 -p1 -b .mdv
 
 %build
 cp %SOURCE1 .
