@@ -1,7 +1,7 @@
 %define name    gargoyle-free
 %define originalversion 2009-08-25
 %define version 20090825
-%define release %mkrel 2
+%define release %mkrel 3
 
 Name:           %{name}
 Summary:        Graphical player for Interactive Fiction games
@@ -16,7 +16,7 @@ Source1:	README.mandriva
 Patch0:		dfsg_disable_alan.patch
 Patch1:		dfsg_disable_hugo.patch
 Patch2:		dfsg_replace_luximono_font.patch
-Patch3:		fhs_locate_private_library.patch
+Patch3:		mandrivaify-wrapper-script.patch
 Patch4:		ignore_bundled_libraries.patch
 Patch5:		sdl_sound_debian.patch
 License:        GPLv2 and others
@@ -51,24 +51,28 @@ will miss the hyperlinks.
 
 %prep
 %setup -q -n %{name}-%{originalversion}
-%patch0 -p1 -b .mdv
-%patch1 -p1 -b .mdv
-%patch2 -p1 -b .mdv
-%patch3 -p0 -b .mdv
-%patch4 -p1 -b .mdv
-%patch5 -p1 -b .mdv
+%patch0 -p1 -b .orig
+%patch1 -p1 -b .orig
+%patch2 -p1 -b .orig
+%patch3 -p0 -b .orig
+%patch4 -p1 -b .orig
+%patch5 -p1 -b .orig
 
 %build
 cp %SOURCE1 .
 jam
+sed -i garglk/launcher.sh -e 's#___LIBDIR___#'%{_libdir}'#' 
+jam install #installs in BUILD/%{name}-%{originalversion}/build/dist
 
 %install
 rm -rf %{buildroot}
 mkdir -p %{buildroot}
-jam install #installs in BUILD/%{name}-%{originalversion}/build/dist
 install -d %{buildroot}%{_gamesbindir}
 install -m 755 build/dist/gargoyle %{buildroot}%{_gamesbindir}/%{name}
 rm -f build/dist/gargoyle
+install -d %{buildroot}%{_libdir}
+install -m 755 build/dist/libgarglk.so %{buildroot}%{_libdir}/
+rm -f build/dist/libgarglk.so
 install -d %{buildroot}%{_libdir}/gargoyle
 install -m 755 build/dist/* %{buildroot}%{_libdir}/gargoyle
 
@@ -82,4 +86,5 @@ rm -rf %{buildroot}
 %doc README.mandriva License.txt
 %{_gamesbindir}/%{name}
 %dir %{_libdir}/gargoyle
+%{_libdir}/lib*
 %{_libdir}/gargoyle/*
