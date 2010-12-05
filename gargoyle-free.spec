@@ -1,7 +1,7 @@
 %define name    gargoyle-free
 %define originalversion 2009-08-25
 %define version 20090825
-%define release %mkrel 3
+%define release %mkrel 4
 
 Name:           %{name}
 Summary:        Graphical player for Interactive Fiction games
