@@ -1,0 +1,32 @@
+Remove unneeded parts in the wrapper script.
+___LIBDIR___ will be sed by the value of %_libdir
+Index: garglk/launcher.sh
+===================================================================
+--- garglk/launcher.sh
++++ garglk/launcher.sh	2010-04-05 21:40:00.000000000 +0200
+@@ -1,23 +1,7 @@
+-
+-#
+-# Darwin has install_name magic to find the dylib.
+-# ELF has no such provision, which makes it necessary
+-# to set LD_LIBRARY_PATH.
++#!/bin/sh
+ #
+ 
+-if [ `uname` != Darwin ]
+-then
+-    abspath=`readlink -f $0`	# get the full path of this script
+-    dirpath=`dirname $abspath`	# get directory part
+-    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$dirpath
+-else
+-    dirpath=`dirname $0`
+-fi
+-
+-if [ x"$dirpath" == x ]
+-then
+-    dirpath=.
+-fi
++dirpath=___LIBDIR___/gargoyle
+ 
+ #
+ # Check the arguments

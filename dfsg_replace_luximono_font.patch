@@ -1,0 +1,147 @@
+Description: replace the non-free LuxiMono font
+ Currently I'm trying DejaVu Sans Mono, though a Serif
+ font may be more appropriate.  Since DejaVu Sans Mono's license is not
+ compatible with the GNU GPL, it cannot be bundled in the executable,
+ so here's a patch to locate and load it using FontConfig.
+ .
+ Games such as "The Moon Watch" refer to the original builtin fonts
+ in their .ini configuration: "LuxiMonoRegular", "LuxiMonoBold",
+ "LuxiMonoOblique", "LuxiMonoBoldOblique". In such case, we probably
+ should keep the internal font names as-is (not rename them) and
+ silently remap them to the free font.
+Forwarded: http://groups.google.com/group/garglk-dev/browse_thread/thread/62a038ac4986d2a
+Author: Sylvain Beucler <beuc@beuc.net>
+Last-Update: 2009-09-13
+
+Index: gargoyle-free/garglk/fontdata.c
+===================================================================
+--- gargoyle-free.orig/garglk/fontdata.c	2009-09-13 14:29:45.000000000 +0200
++++ gargoyle-free/garglk/fontdata.c	2009-09-13 14:30:09.000000000 +0200
+@@ -1,6 +1,7 @@
+ /******************************************************************************
+  *                                                                            *
+  * Copyright (C) 2006-2009 by Tor Andersson.                                  *
++ * Copyright (C) 2008, 2009  Sylvain Beucler                                        *
+  *                                                                            *
+  * This file is part of Gargoyle.                                             *
+  *                                                                            *
+@@ -22,10 +23,12 @@
+ 
+ /* include hex-dumped font files */
+ 
++/* Excluding non-free Luxi fonts
+ #include "lmr.hex"
+ #include "lmb.hex"
+ #include "lmi.hex"
+ #include "lmz.hex"
++*/
+ 
+ #include "cbr.hex"
+ #include "cbb.hex"
+@@ -37,21 +40,17 @@
+ 	switch (idx)
+ 	{
+ 	case 0:
+-		*ptr = LuxiMonoRegular_pfb;
+-		*len = LuxiMonoRegular_pfb_len;
+-		break;
++	  gli_get_system_font("DejaVu Sans Mono:style=Book", ptr, len);
++	  break;
+ 	case 1:
+-		*ptr = LuxiMonoBold_pfb;
+-		*len = LuxiMonoBold_pfb_len;
+-		break;
++	  gli_get_system_font("DejaVu Sans Mono:style=Bold", ptr, len);
++	  break;
+ 	case 2:
+-		*ptr = LuxiMonoOblique_pfb;
+-		*len = LuxiMonoOblique_pfb_len;
+-		break;
++	  gli_get_system_font("DejaVu Sans Mono:style=Oblique", ptr, len);
++	  break;
+ 	case 3:
+-		*ptr = LuxiMonoBoldOblique_pfb;
+-		*len = LuxiMonoBoldOblique_pfb_len;
+-		break;
++	  gli_get_system_font("DejaVu Sans Mono:style=Bold Oblique", ptr, len);
++	  break;
+ 
+ 	case 4:
+ 		*ptr = CharterBT_Roman_ttf;
+@@ -76,3 +75,63 @@
+ 	}
+ }
+ 
++#include <fontconfig/fontconfig.h>
++#include <stdio.h>
++#include <stdlib.h>
++/* Get filename for canonical font name 'fontname'. Return NULL if the
++   font cannot be found (for correctness, no alternate font will be
++   provided). */
++int gli_get_system_font(char* fontname, unsigned char **ptr, unsigned int *len)
++{
++  *ptr = 0;
++  *len = 0;
++
++  char* filename = NULL;
++  FcPattern* p = NULL;
++  FcChar8* strval = NULL;
++  FcObjectSet *attr = NULL;
++
++  if (!FcInit())
++    {
++      winabort("Internal error: cannot initialize fontconfig");
++      return 0;
++    }
++
++  p = FcNameParse((FcChar8*)fontname);
++  if (p == NULL)
++    {
++      winabort("Internal error: invalid font pattern: %s", fontname);
++      return 0;
++    }
++  /* Grab filename attribute */
++  attr = FcObjectSetBuild (FC_FILE, (char *) 0);
++
++  FcFontSet *fs = FcFontList (0, p, attr);
++  if (fs->nfont == 0)
++    {
++      winabort("gli_get_system_font: no matching font for %s", fontname);
++      return 0;
++    }
++  if (FcPatternGetString(fs->fonts[0], FC_FILE, 0, &strval) == FcResultTypeMismatch
++      || strval == NULL)
++    {
++      winabort("get_fontconfig_path: cannot find font filename for %s", fontname);
++      return 0;
++    }
++
++  FILE* fp = fopen(strval, "rb");
++  fseek(fp, 0L, SEEK_END);
++  *len = ftell(fp);
++  fseek(fp, 0L, SEEK_SET);
++
++  *ptr = malloc(*len);
++  fread(*ptr, 1, *len, fp);
++  fclose(fp);
++
++  FcFontSetDestroy(fs);
++  FcObjectSetDestroy(attr);
++  FcPatternDestroy(p);
++  FcFini();
++
++  return 1;
++}
+Index: gargoyle-free/Jamrules
+===================================================================
+--- gargoyle-free.orig/Jamrules	2009-09-13 14:46:10.000000000 +0200
++++ gargoyle-free/Jamrules	2009-09-13 14:46:13.000000000 +0200
+@@ -44,7 +44,7 @@
+ 
+     case LINUX :
+         Echo "OS is LINUX (gtk+)" ;
+-        PKGCONFIG = "pkg-config freetype2 gtk+-2.0 gdk-x11-2.0 gobject-2.0" ;
++        PKGCONFIG = "pkg-config freetype2 gtk+-2.0 gdk-x11-2.0 gobject-2.0 fontconfig" ;
+         #PKGCONFIG = "pkg-config freetype2 gtk+" ;
+         SHELLHEADER = "#!/bin/bash" ;		
+         GARGLKCCFLAGS = "`$(PKGCONFIG) --cflags`" -fPIC ;

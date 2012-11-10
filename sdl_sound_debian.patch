@@ -1,0 +1,46 @@
+Description: dynamically link SDL_sound
+ Should be used upstream in the next release, since statically linking
+ was only used to work-around an old bug in SDL_sound.
+ I'm discussing a refinement with them.
+Origin: http://groups.google.com/group/garglk-dev/browse_thread/thread/62a038ac4986d2a
+Author: Ben Cressey <bcressey@gmail.com>, Sylvain Beucler <beuc@beuc.net>
+
+Index: gargoyle-free/Jamrules
+===================================================================
+--- gargoyle-free.orig/Jamrules	2009-09-12 11:56:00.000000000 +0200
++++ gargoyle-free/Jamrules	2009-09-12 12:10:54.000000000 +0200
+@@ -54,7 +54,7 @@
+ 	if $(USESDL)
+ 	{
+ 	    GARGLKCCFLAGS += -I/usr/include/SDL ;
+-	    SHRLINKLIBS += -lSDL_mixer -lSDL -lsmpeg -lvorbisfile ;
++	    SHRLINKLIBS += -lSDL_mixer -lSDL -lSDL_sound ;
+ 	}
+ 
+     case SOLARIS :
+Index: gargoyle-free/garglk/Jamfile
+===================================================================
+--- gargoyle-free.orig/garglk/Jamfile	2009-09-12 11:56:00.000000000 +0200
++++ gargoyle-free/garglk/Jamfile	2009-09-12 12:10:30.000000000 +0200
+@@ -14,11 +14,6 @@
+     SubDirHdrs $(TOP) support sdl-1.2.13 ;
+ }
+ 
+-if $(USESDL)
+-{
+-    SubDirHdrs $(TOP) support sdl_sound-1.0.3 ;
+-}
+-
+ GARGSRCS = 
+     gi_blorb.c gi_dispa.c
+     cggestal.c cgblorb.c cgfref.c cgmisc.c cgstyle.c cgstream.c cgunicod.c
+@@ -47,9 +42,3 @@
+ 
+ Library libgarglkmain : main.c ;
+ SharedLibrary libgarglk : $(GARGSRCS) ;
+-
+-if ( $(OS) = LINUX || $(OS) = SOLARIS ) && $(USESDL)
+-{
+-    LinkLibrariesOnSharedLibrary libgarglk : SDL_sound_static ;
+-}
+-

@@ -1,0 +1,19 @@
+Description: disable non-free alan interpreter
+Forwarded: not-needed
+Author: Sylvain Beucler <beuc@beuc.net>
+
+Index: gargoyle-2009.08.25/terps/Jamfile
+===================================================================
+--- gargoyle-2009.08.25.orig/terps/Jamfile	2009-09-12 00:43:38.000000000 +0200
++++ gargoyle-2009.08.25/terps/Jamfile	2009-09-12 00:43:55.000000000 +0200
+@@ -8,8 +8,8 @@
+ 
+ MAKE_ADVSYS     ?= yes ;
+ MAKE_AGILITY    ?= yes ;
+-MAKE_ALAN2      ?= yes ;
+-MAKE_ALAN3      ?= yes ;
++MAKE_ALAN2      ?= no ;
++MAKE_ALAN3      ?= no ;
+ MAKE_FROTZ      ?= yes ;
+ MAKE_GEAS       ?= yes ;
+ MAKE_GIT        ?= yes ;

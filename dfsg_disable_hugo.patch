@@ -1,0 +1,17 @@
+Description: disable non-free hugo interpreter
+Forwarded: not-needed
+Author: Sylvain Beucler <beuc@beuc.net>
+
+Index: gargoyle-2009.08.25/terps/Jamfile
+===================================================================
+--- gargoyle-2009.08.25.orig/terps/Jamfile	2009-09-12 00:44:09.000000000 +0200
++++ gargoyle-2009.08.25/terps/Jamfile	2009-09-12 00:44:15.000000000 +0200
+@@ -14,7 +14,7 @@
+ MAKE_GEAS       ?= yes ;
+ MAKE_GIT        ?= yes ;
+ MAKE_GLULXE     ?= yes ;
+-MAKE_HUGO       ?= yes ;
++MAKE_HUGO       ?= no ;
+ MAKE_LEVEL9     ?= yes ;
+ MAKE_MAGNETIC   ?= yes ;
+ MAKE_NITFOL     ?= yes ;
