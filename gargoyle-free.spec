@@ -7,7 +7,7 @@ Name:           %{name}
 Summary:        Graphical player for Interactive Fiction games
 Version:        %{version}
 Release:        %{release}
-URL:            http://ccxvii.net/gargoyle/ 
+URL:            https://ccxvii.net/gargoyle/ 
 # This is not the original source zip because the original contains non-free code
 # see README.mandriva for more explanations
 # Original download URL : http://garglk.googlecode.com/files/gargoyle-%{original-version}-sources.zip
